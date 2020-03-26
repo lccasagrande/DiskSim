@@ -1,3 +1,0 @@
-
-export LIBDDBG_PREFIX=
-export LIBDDBG_INCL=$(LIBDDBG_PREFIX)/include
