@@ -7,6 +7,8 @@ src/modules/*_param.*
 src/modules/modules.h
 libs/diskmodel/modules/*_param.*
 libs/diskmodel/modules/modules.h
+libs/memsmodel/modules/*_param.*
+libs/memsmodel/modules/modules.h
 libs/libparam/*.tab.*
 libs/libparam/lex.*
 examples/*.outv

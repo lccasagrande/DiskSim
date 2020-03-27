@@ -35,6 +35,7 @@
 
 #include "disksim_global.h"
 #include "disksim_iosim.h"	/* Provides MAXINBUSES */
+#include "disksim_ioqueue.h"
 #include "disksim_stat.h"
 
 #define MEMS_MAXSLEDS		9
@@ -294,7 +295,5 @@ typedef struct {
   int    subtrack_access_num;	/* Number of subtrack accesses */
   int    subtrack_access_tips;	/* Sum of all tips used during accesses */
 } mems_reqinfo_t;
-
-struct mems* memsmodel_mems_loadparams(struct lp_block* b, int* numptr);
 
 #endif

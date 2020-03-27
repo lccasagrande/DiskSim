@@ -212,7 +212,7 @@ mems_get_new_extent(ioreq_event *curr)
 void
 mems_update_reqinfo(ioreq_event *curr)
 {
-  mems_reqinfo_t *r = curr->mems_reqinfo;
+  mems_reqinfo_t *r = (mems_reqinfo_t *)curr->mems_reqinfo;
   mems_extent_t *extent_ptr = r->extents;
   ioreq_event *event_ptr;
   ioreq_event *next_event_ptr;
@@ -334,8 +334,8 @@ mems_get_new_reqinfo (ioreq_event *curr)
 static struct mems_prefetch_info *
 mems_get_prefetch_info (ioreq_event *curr)
 {
-  mems_sled_t    *sled = curr->mems_sled;
-  mems_reqinfo_t *reqinfo = curr->mems_reqinfo;
+  mems_sled_t    *sled = (mems_sled_t    *)curr->mems_sled;
+  mems_reqinfo_t *reqinfo = (mems_reqinfo_t *)curr->mems_reqinfo;
   struct mems_prefetch_info *p;
 
   if (!sled->prefetch_depth) return NULL;
@@ -387,8 +387,8 @@ static void
 mems_request_complete (ioreq_event *curr,
 		       double latency)
 {
-  mems_sled_t *sled = curr->mems_sled;
-  mems_reqinfo_t *reqinfo = curr->mems_reqinfo;
+  mems_sled_t *sled = (mems_sled_t *)curr->mems_sled;
+  mems_reqinfo_t *reqinfo = (mems_reqinfo_t *)curr->mems_reqinfo;
   ioreq_event *batch_ptr;
   ioreq_event *next_ptr;
 
@@ -399,7 +399,7 @@ mems_request_complete (ioreq_event *curr,
 #endif
 
   {	/* Verify that we're not insane here */
-    mems_reqinfo_t *r = curr->mems_reqinfo;
+    mems_reqinfo_t *r = (mems_reqinfo_t *)curr->mems_reqinfo;
     // assert ((r->bus_done == TRUE) && (r->media_done == TRUE));
   }
 
@@ -521,7 +521,7 @@ mems_energy_update_sled_seek(mems_sled_t *sled,
   sled->stat.total_energy_j += energy_j;
   if (sled->active_request)
     {
-      mems_reqinfo_t *reqinfo = sled->active_request->mems_reqinfo;
+      mems_reqinfo_t *reqinfo = (mems_reqinfo_t *)sled->active_request->mems_reqinfo;
       reqinfo->request_energy_uj += energy_j * 1000000.0;
     }
   
@@ -552,7 +552,7 @@ mems_energy_update_sled_servo(mems_sled_t *sled,
   sled->stat.total_energy_j += energy_j;
   if (sled->active_request)
     {
-      mems_reqinfo_t *reqinfo = sled->active_request->mems_reqinfo;
+      mems_reqinfo_t *reqinfo = (mems_reqinfo_t *)sled->active_request->mems_reqinfo;
       int num_tips_req = sled->tip_sectors_per_lbn *
 	(reqinfo->next_block_end - reqinfo->next_block_start + 1);
       double energy_j_req =
@@ -590,7 +590,7 @@ mems_energy_update_sled_data(mems_sled_t *sled,
   
   if (sled->active_request)
     {
-      mems_reqinfo_t *reqinfo = sled->active_request->mems_reqinfo;
+      mems_reqinfo_t *reqinfo = (mems_reqinfo_t *)sled->active_request->mems_reqinfo;
       int num_tips_req = sled->tip_sectors_per_lbn *
 	(reqinfo->next_block_end - reqinfo->next_block_start + 1);
       double energy_j_req =
@@ -611,7 +611,7 @@ mems_energy_update_sled_data(mems_sled_t *sled,
 void
 mems_io_access_arrive(ioreq_event *curr)
 {
-  mems_sled_t *sled = curr->mems_sled;
+  mems_sled_t *sled = (mems_sled_t *)curr->mems_sled;
   mems_t *dev = getmems(curr->devno);
 
 #ifdef VERBOSE_EVENTLOOP
@@ -641,7 +641,7 @@ mems_io_access_arrive(ioreq_event *curr)
 void
 mems_device_overhead_complete(ioreq_event *curr)
 {
-  mems_sled_t *sled = curr->mems_sled;
+  mems_sled_t *sled = (mems_sled_t *)curr->mems_sled;
   mems_t *dev = getmems(curr->devno);
 
 #ifdef VERBOSE_EVENTLOOP
@@ -688,7 +688,7 @@ mems_device_overhead_complete(ioreq_event *curr)
 	  //  is that if one request of the batch is cached, then the rest
 	  //  are as well.  I may need to make that explicit.
 
-	  mems_reqinfo_t *reqinfo = curr->mems_reqinfo;
+	  mems_reqinfo_t *reqinfo = (mems_reqinfo_t *)curr->mems_reqinfo;
 	  mems_extent_t *extent_ptr = reqinfo->extents;
 
 	  if (mems_buffer_check(extent_ptr->firstblock,
@@ -860,7 +860,7 @@ mems_device_overhead_complete(ioreq_event *curr)
 void
 mems_sled_schedule(ioreq_event *curr)
 {
-  mems_sled_t *sled = curr->mems_sled;
+  mems_sled_t *sled = (mems_sled_t *)curr->mems_sled;
   mems_t *dev = getmems(curr->devno);
   ioreq_event *old_active_request;
   
@@ -981,7 +981,7 @@ mems_sled_schedule(ioreq_event *curr)
       struct tipset first_tipset;
       mems_extent_t *extent_ptr;
       
-      reqinfo = sled->active_request->mems_reqinfo;
+      reqinfo = (mems_reqinfo_t *)sled->active_request->mems_reqinfo;
       
 #ifdef VERBOSE_EVENTLOOP
       printf("MEMS_SLED_SCHEDULE:: before\n");
@@ -1168,7 +1168,7 @@ mems_update_seek_stats(double seek_time,
 {
   if (sled->active_request)
     {
-      mems_reqinfo_t *reqinfo = sled->active_request->mems_reqinfo;
+      mems_reqinfo_t *reqinfo = (mems_reqinfo_t *)sled->active_request->mems_reqinfo;
       
       reqinfo->subtrack_access_num++;
       // printf("subtrack_access_num = %d\n", reqinfo->subtrack_access_num);
@@ -1223,7 +1223,7 @@ mems_update_seek_stats(double seek_time,
 void
 mems_sled_seek(ioreq_event *curr)
 {
-  mems_sled_t *sled = curr->mems_sled;
+  mems_sled_t *sled = (mems_sled_t *)curr->mems_sled;
   enum direction_enum { UP, DOWN } direction;
   double time_up, x_up, y_up, to_up;
   double time_dn = 0.0;
@@ -1300,7 +1300,7 @@ mems_sled_seek(ioreq_event *curr)
 void
 mems_sled_servo(ioreq_event *curr)
 {
-  mems_sled_t *sled = curr->mems_sled;
+  mems_sled_t *sled = (mems_sled_t *)curr->mems_sled;
   double timedelta;
 
 #ifdef VERBOSE_EVENTLOOP
@@ -1339,8 +1339,8 @@ mems_sled_servo(ioreq_event *curr)
    * we're building a quality simulator here. */
   if (sled->active_request)
     {
-      mems_reqinfo_t *reqinfo = sled->active_request->mems_reqinfo;
-      mems_extent_t *extent_ptr = reqinfo->extents;
+      mems_reqinfo_t *reqinfo = (mems_reqinfo_t *)sled->active_request->mems_reqinfo;
+      mems_extent_t *extent_ptr = (mems_extent_t *)reqinfo->extents;
       int i;
       int data_to_write = TRUE;
       
@@ -1379,7 +1379,7 @@ mems_sled_servo(ioreq_event *curr)
 void
 mems_sled_data(ioreq_event *curr)
 {
-  mems_sled_t *sled = curr->mems_sled;
+  mems_sled_t *sled = (mems_sled_t *)curr->mems_sled;
   double timedelta;
 
 #ifdef VERBOSE_EVENTLOOP
@@ -1409,7 +1409,7 @@ mems_sled_data(ioreq_event *curr)
 void
 mems_sled_update(ioreq_event *curr)
 {
-  mems_sled_t *sled = curr->mems_sled;
+  mems_sled_t *sled = (mems_sled_t *)curr->mems_sled;
 
 #ifdef VERBOSE_EVENTLOOP
   printf("MEMS_SLED_UPDATE: %f\n", simtime);
@@ -1418,7 +1418,7 @@ mems_sled_update(ioreq_event *curr)
   
   if (sled->active_request)
     {
-      mems_reqinfo_t *reqinfo = sled->active_request->mems_reqinfo;
+      mems_reqinfo_t *reqinfo = (mems_reqinfo_t *)sled->active_request->mems_reqinfo;
       int extent;
       mems_extent_t *extent_ptr;
       mems_extent_t *next_extent;
@@ -1534,7 +1534,7 @@ mems_sled_update(ioreq_event *curr)
 void
 mems_io_interrupt_complete(ioreq_event *curr)
 {
-  mems_sled_t *sled = curr->mems_sled;
+  mems_sled_t *sled = (mems_sled_t *)curr->mems_sled;
   mems_t *dev = getmems(curr->devno);
 
 #ifdef VERBOSE_EVENTLOOP
@@ -1591,9 +1591,9 @@ mems_io_interrupt_complete(ioreq_event *curr)
 void
 mems_bus_initiate(ioreq_event *curr)
 {
-  mems_sled_t *sled = curr->mems_sled;
+  mems_sled_t *sled = (mems_sled_t *)curr->mems_sled;
   mems_t *dev = getmems(curr->devno);
-  mems_reqinfo_t *reqinfo = curr->mems_reqinfo;
+  mems_reqinfo_t *reqinfo = (mems_reqinfo_t *)curr->mems_reqinfo;
   mems_extent_t *extent_ptr;
   int num_extents;
   int i;
@@ -1657,7 +1657,7 @@ mems_bus_initiate(ioreq_event *curr)
 void
 mems_bus_transfer(ioreq_event *curr)
 {
-  mems_sled_t *sled = curr->mems_sled;
+  mems_sled_t *sled = (mems_sled_t *)curr->mems_sled;
 
 #ifdef VERBOSE_EVENTLOOP
   printf("MEMS_BUS_TRANSFER: %f\n", simtime);
@@ -1673,9 +1673,9 @@ mems_bus_transfer(ioreq_event *curr)
 void
 mems_bus_update(ioreq_event *curr)
 {
-  mems_sled_t *sled = curr->mems_sled;
+  mems_sled_t *sled = (mems_sled_t *)curr->mems_sled;
   mems_t *dev = getmems(curr->devno);
-  mems_reqinfo_t *reqinfo = curr->mems_reqinfo;
+  mems_reqinfo_t *reqinfo = (mems_reqinfo_t *)curr->mems_reqinfo;
   mems_extent_t *extent_ptr;
   mems_extent_t *bus_extent;
   int extent;
@@ -1868,7 +1868,7 @@ mems_bus_update(ioreq_event *curr)
 void
 mems_io_qlen_maxcheck(ioreq_event *curr)
 {
-  mems_sled_t *sled = curr->mems_sled;
+  mems_sled_t *sled = (mems_sled_t *)curr->mems_sled;
       /* Used only at initialization time to set up queue stuff */
 
   curr->tempint1 = -1;
@@ -1884,7 +1884,7 @@ mems_io_qlen_maxcheck(ioreq_event *curr)
 void
 mems_event_arrive (ioreq_event *curr)
 {
-  mems_sled_t *sled = curr->mems_sled;
+  mems_sled_t *sled = (mems_sled_t *)curr->mems_sled;
   double timedelta;
 
   switch (curr->type)
