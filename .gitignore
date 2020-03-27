@@ -9,8 +9,8 @@ libs/diskmodel/modules/*_param.*
 libs/diskmodel/modules/modules.h
 libs/libparam/*.tab.*
 libs/libparam/lex.*
-valid/*.outv
-valid/*.csv
+examples/*.outv
+examples/*.csv
 
 # Prerequisites
 *.d
