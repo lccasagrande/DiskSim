@@ -14,22 +14,22 @@ string(REGEX REPLACE "/libparam" "" LIBS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
 
+include_directories(${LIBS_SOURCE_DIR})
+
 BISON_TARGET(MyParser "libparam.y" "libparam.tab.c" COMPILE_FLAGS "-plibparam --defines")
 
 FLEX_TARGET(MyScanner "libparam.lex" "lex.libparam.c" COMPILE_FLAGS -Plibparam)
 
 ADD_FLEX_BISON_DEPENDENCY(MyScanner MyParser)
 
-include_directories(${LIBS_SOURCE_DIR})
-
 ################
 # SOURCES      #
 ################
-file(GLOB SOURCES "*.c")
+file(GLOB SOURCES "*.h" "*.c")
 
-add_library(libparam
-            ${SOURCES}
-            ${FLEX_MyScanner_OUTPUTS}
-            ${BISON_MyParser_OUTPUTS})
+add_library(libparam 
+    ${SOURCES}
+    ${FLEX_MyScanner_OUTPUTS}
+    ${BISON_MyParser_OUTPUTS})
 
 set_target_properties(libparam PROPERTIES OUTPUT_NAME "param")
