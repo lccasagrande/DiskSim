@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PREFIX=../src
+PREFIX=../build
 
 echo ""
 echo "These results represent actual drive validation experiments"
@@ -8,52 +8,52 @@ echo "These results represent actual drive validation experiments"
 echo ""
 echo "QUANTUM_QM39100TD-SW (rms should be about 0.378)"
 ${PREFIX}/disksim atlas_III.parv atlas_III.outv validate atlas_III.trace 0\
-&& ${PREFIX}/rms atlas_III.outv atlas_III.outv -1 -1 1
+&& ${PREFIX}/disksim_rms atlas_III.outv atlas_III.outv -1 -1 1
 
 echo ""
 echo "SEAGATE_ST32171W (rms should be about 0.349)"
 ${PREFIX}/disksim barracuda.parv barracuda.outv validate barracuda.trace 0\
-&& ${PREFIX}/rms barracuda.outv barracuda.outv -1 -1 1
+&& ${PREFIX}/disksim_rms barracuda.outv barracuda.outv -1 -1 1
 
 echo ""
 echo "SEAGATE_ST34501N (rms should be about 0.318)"
 ${PREFIX}/disksim cheetah4LP.parv cheetah4LP.outv validate cheetah4LP.trace 0\
-&& ${PREFIX}/rms cheetah4LP.outv cheetah4LP.outv -1 -1 1
+&& ${PREFIX}/disksim_rms cheetah4LP.outv cheetah4LP.outv -1 -1 1
 
 echo ""
 echo "SEAGATE_ST39102LW (rms should be about 0.107)"
 ${PREFIX}/disksim cheetah9LP.parv cheetah9LP.outv validate cheetah9LP.trace 0\
-&& ${PREFIX}/rms cheetah9LP.outv cheetah9LP.outv -1 -1 1
+&& ${PREFIX}/disksim_rms cheetah9LP.outv cheetah9LP.outv -1 -1 1
 
 echo ""
 echo "IBM_DNES-309170W (rms should be about 0.135)"
 ${PREFIX}/disksim ibm18es.parv ibm18es.outv validate ibm18es.trace 0\
-&& ${PREFIX}/rms ibm18es.outv ibm18es.outv -1 -1 1
+&& ${PREFIX}/disksim_rms ibm18es.outv ibm18es.outv -1 -1 1
 
 echo ""
 echo "QUANTUM_TORNADO (rms should be about 0.268)"
 ${PREFIX}/disksim atlas10k.parv atlas10k.outv validate atlas10k.trace 0\
-&& ${PREFIX}/rms atlas10k.outv atlas10k.outv -1 -1 1
+&& ${PREFIX}/disksim_rms atlas10k.outv atlas10k.outv -1 -1 1
 
 echo ""
 echo "HP_C2247_validate (rms should be about 0.090)"
 ${PREFIX}/disksim hp_c2247a.parv hp_c2247a.outv validate hp_c2247a.trace 0\
-&& ${PREFIX}/rms hp_c2247a.outv hp_c2247a.outv -1 -1 1
+&& ${PREFIX}/disksim_rms hp_c2247a.outv hp_c2247a.outv -1 -1 1
 
 echo ""
 echo "HP_C3323_validate (rms should be about 0.306)"
 ${PREFIX}/disksim hp_c3323a.parv hp_c3323a.outv validate hp_c3323a.trace 0\
-&& ${PREFIX}/rms hp_c3323a.outv hp_c3323a.outv -1 -1 1
+&& ${PREFIX}/disksim_rms hp_c3323a.outv hp_c3323a.outv -1 -1 1
 
 echo ""
 echo "HP_C2490_validate (rms should be about 0.254)"
 ${PREFIX}/disksim hp_c2490a.parv hp_c2490a.outv validate hp_c2490a.trace 0\
-&& ${PREFIX}/rms hp_c2490a.outv hp_c2490a.outv -1 -1 1
+&& ${PREFIX}/disksim_rms hp_c2490a.outv hp_c2490a.outv -1 -1 1
 
 echo ""
 echo "DEC_RZ26_validate (rms should be about 0.340)"
 ${PREFIX}/disksim dec_rz26.parv dec_rz26.outv validate dec_rz26.trace 0\
-&& ${PREFIX}/rms dec_rz26.outv dec_rz26.outv -1 -1 1
+&& ${PREFIX}/disksim_rms dec_rz26.outv dec_rz26.outv -1 -1 1
 
 
 echo ""
@@ -141,12 +141,12 @@ echo "ASCII input (avg. resp should be about 13.8ms)"
 
 echo ""
 echo "syssim: externally-controlled DiskSim (avg. resp should be about 8.9ms)"
-${PREFIX}/syssim cheetah4LP.parv syssim.outv 2676846\
+${PREFIX}/disksim_syssim cheetah4LP.parv syssim.outv 2676846\
 && grep "IOdriver Response time average" syssim.outv
 
 # echo ""
 # echo "syssim2: dual externally-controlled DiskSim instances (avg. resps should same as previous and 0.0ms, respectively)"
-# ${PREFIX}/syssim st41601n.parv syssim2.outv 2676846 1\
+# ${PREFIX}/disksim_syssim st41601n.parv syssim2.outv 2676846 1\
 # && grep "IOdriver Response time average" syssim2.outv\
 # && grep "IOdriver Response time average" syssim2.outv2
 

@@ -1,0 +1,1179 @@
+
+*** DiskSim version      : 2.01.016
+*** Output file name     : synthsimpledisk.outv
+*** Parameter File       : synthsimpledisk.parv
+*** Input trace format   : ascii
+*** I/O trace used       : 0
+*** Synthgen to be used? : yes
+
+*** Command Line Overrides specified: 0
+
+disksim_global Global {
+Init Seed = 42,
+Real Seed = 42,
+Stat definition file = statdefs
+} # end of Global spec
+
+disksim_stats Stats {
+iodriver stats = disksim_iodriver_stats {
+Print driver size stats = 1,
+Print driver locality stats = 0,
+Print driver blocking stats = 0,
+Print driver interference stats = 0,
+Print driver stamp stats = 1,
+Print driver per-device stats = 1,
+Print driver streak stats = 1
+   },
+bus stats = disksim_bus_stats {
+Print bus idle stats = 1,
+Print bus arbwait stats = 1
+   },
+ctlr stats = disksim_ctlr_stats {
+Print controller cache stats = 1,
+Print controller size stats = 1,
+Print controller locality stats = 1,
+Print controller blocking stats = 1,
+Print controller streak stats = 1,
+Print controller stamp stats = 1,
+Print controller per-device stats = 1,
+Print controller intarr stats = 1
+   },
+device stats = disksim_device_stats {
+Print device queue stats = 1,
+Print device crit stats = 0,
+Print device idle stats = 0,
+Print device intarr stats = 0,
+Print device interfere stats = 0,
+Print device buffer stats = 1,
+Print device acctime stats = 1
+   },
+process flow stats = disksim_pf_stats {
+Print per-process stats = 1,
+Print per-CPU stats = 1,
+Print all interrupt stats = 1,
+Print sleep stats = 1
+   }
+} # end of Stats spec
+
+disksim_iodriver DRIVER0 {
+type = 1,
+Constant access time = 0.0,
+Scheduler = disksim_ioqueue {
+Scheduling policy = 3,
+Cylinder mapping strategy = 1,
+Write initiation delay = 0.0,
+Read initiation delay = 0.0,
+Timeout time/weight = 30,
+Timeout scheduling = 3,
+Scheduling priority scheme = 1,
+Priority scheduling = 3,
+Scheduling timeout scheme = 1
+   },
+Use queueing in subsystem = 1
+} # end of DRIVER0 spec
+
+disksim_bus BUS0 {
+type = 1,
+Arbitration type = 1,
+Arbitration time = 0.0,
+Read block transfer time = 0.0,
+Write block transfer time = 0.0,
+Print stats = 0
+} # end of BUS0 spec
+
+disksim_bus BUS1 {
+type = 1,
+Arbitration type = 1,
+Arbitration time = 0.0,
+Read block transfer time = 0.0,
+Write block transfer time = 0.0,
+Print stats = 1
+} # end of BUS1 spec
+
+disksim_ctlr CTLR0 {
+type = 1,
+Scale for delays = 0.0,
+Bulk sector transfer time = 0.0,
+Maximum queue length = 0,
+Print stats = 1
+} # end of CTLR0 spec
+
+disksim_simpledisk SD0 {
+Block count = 100000,
+Access time = 9.500000,
+Command overhead = 0.500000,
+Bus transaction latency = 0.0,
+Scheduler = disksim_ioqueue {
+Scheduling policy = 1,
+Cylinder mapping strategy = 0,
+Write initiation delay = 0.0,
+Read initiation delay = 0.0,
+Timeout time/weight = 0,
+Timeout scheduling = 0,
+Scheduling priority scheme = 0,
+Priority scheduling = 0,
+Scheduling timeout scheme = 0
+   }
+} # end of SD0 spec
+
+instantiate [ 
+   statfoo
+] as Stats
+
+instantiate [ 
+   bus0
+] as BUS0
+
+instantiate [ 
+   sd0
+] as SD0
+
+instantiate [ 
+   bus1
+] as BUS1
+
+instantiate [ 
+   driver0
+] as DRIVER0
+
+instantiate [ 
+   ctlr0
+] as CTLR0
+
+topospec disksim_iodriver driver0 [ 
+   disksim_bus bus0 [ 
+      disksim_ctlr ctlr0 [ 
+         disksim_bus bus1 [ 
+            disksim_simpledisk sd0 [ ]
+         ]
+      ]
+   ]
+]
+
+disksim_logorg org0 {
+Addressing mode = Parts,
+Distribution scheme = Asis,
+Redundancy scheme = Noredun,
+devices = [ 
+      sd0
+   ],
+Parity stripe unit = 64,
+Parity rotation type = 1,
+Time stamp interval = 0.0,
+Time stamp start time = 60000.000000,
+RMW vs. reconstruct = 0.500000,
+Time stamp stop time = 10000000000.000000,
+Time stamp file name = stamps
+} # end of org0 spec
+
+disksim_pf Proc {
+Number of processors = 5,
+Process-Flow Time Scale = 1.000000
+} # end of Proc spec
+
+disksim_synthio Synthio {
+Number of I/O requests to generate = 10000,
+Maximum time of trace generated = 100000.000000,
+System call/return with each request = 0,
+Think time from call to request = 0.0,
+Think time from request to return = 0.0,
+Generators = [ 
+      disksim_synthgen {
+Storage capacity per device = 100000,
+devices = [ 
+            sd0
+         ],
+Blocking factor = 8,
+Probability of sequential access = 0.200000,
+General inter-arrival times = [ 
+            exponential, 
+            0.0, 
+            50.000000
+         ],
+Sequential inter-arrival times = [ 
+            exponential, 
+            0.0, 
+            50.000000
+         ],
+Local inter-arrival times = [ 
+            exponential, 
+            0.0, 
+            50.000000
+         ],
+Local distances = [ 
+            normal, 
+            0.0, 
+            40000.000000
+         ],
+Time-limited think times = [ 
+            normal, 
+            30.000000, 
+            100.000000
+         ],
+Sizes = [ 
+            exponential, 
+            0.0, 
+            8.000000
+         ]
+      }, 
+      disksim_synthgen {
+Storage capacity per device = 100000,
+devices = [ 
+            sd0
+         ],
+Blocking factor = 8,
+Probability of sequential access = 0.200000,
+General inter-arrival times = [ 
+            exponential, 
+            0.0, 
+            50.000000
+         ],
+Sequential inter-arrival times = [ 
+            exponential, 
+            0.0, 
+            50.000000
+         ],
+Local inter-arrival times = [ 
+            exponential, 
+            0.0, 
+            50.000000
+         ],
+Local distances = [ 
+            normal, 
+            0.0, 
+            40000.000000
+         ],
+Time-limited think times = [ 
+            normal, 
+            30.000000, 
+            100.000000
+         ],
+Sizes = [ 
+            exponential, 
+            0.0, 
+            8.000000
+         ]
+      }, 
+      disksim_synthgen {
+Storage capacity per device = 100000,
+devices = [ 
+            sd0
+         ],
+Blocking factor = 8,
+Probability of sequential access = 0.200000,
+General inter-arrival times = [ 
+            exponential, 
+            0.0, 
+            50.000000
+         ],
+Sequential inter-arrival times = [ 
+            exponential, 
+            0.0, 
+            50.000000
+         ],
+Local inter-arrival times = [ 
+            exponential, 
+            0.0, 
+            50.000000
+         ],
+Local distances = [ 
+            normal, 
+            0.0, 
+            40000.000000
+         ],
+Time-limited think times = [ 
+            normal, 
+            30.000000, 
+            100.000000
+         ],
+Sizes = [ 
+            exponential, 
+            0.0, 
+            8.000000
+         ]
+      }, 
+      disksim_synthgen {
+Storage capacity per device = 100000,
+devices = [ 
+            sd0
+         ],
+Blocking factor = 8,
+Probability of sequential access = 0.200000,
+General inter-arrival times = [ 
+            exponential, 
+            0.0, 
+            50.000000
+         ],
+Sequential inter-arrival times = [ 
+            exponential, 
+            0.0, 
+            50.000000
+         ],
+Local inter-arrival times = [ 
+            exponential, 
+            0.0, 
+            50.000000
+         ],
+Local distances = [ 
+            normal, 
+            0.0, 
+            40000.000000
+         ],
+Time-limited think times = [ 
+            normal, 
+            30.000000, 
+            100.000000
+         ],
+Sizes = [ 
+            exponential, 
+            0.0, 
+            8.000000
+         ]
+      }, 
+      disksim_synthgen {
+Storage capacity per device = 100000,
+devices = [ 
+            sd0
+         ],
+Blocking factor = 8,
+Probability of sequential access = 0.200000,
+General inter-arrival times = [ 
+            exponential, 
+            0.0, 
+            50.000000
+         ],
+Sequential inter-arrival times = [ 
+            exponential, 
+            0.0, 
+            50.000000
+         ],
+Local inter-arrival times = [ 
+            exponential, 
+            0.0, 
+            50.000000
+         ],
+Local distances = [ 
+            normal, 
+            0.0, 
+            40000.000000
+         ],
+Time-limited think times = [ 
+            normal, 
+            30.000000, 
+            100.000000
+         ],
+Sizes = [ 
+            exponential, 
+            0.0, 
+            8.000000
+         ]
+      }
+   ]
+} # end of Synthio spec
+
+*** loadparams complete
+*** Running Simulation...
+0.000000: pf_initialize  Kicking off cpu #0
+0.000000: pf_initialize  Event occurs at time 68.231536, type CPU_EVENT (50), cpunum 0
+0.000000: pf_initialize  Kicking off cpu #1
+0.000000: pf_initialize  Event occurs at time 34.537445, type CPU_EVENT (50), cpunum 1
+0.000000: pf_initialize  Kicking off cpu #2
+0.000000: pf_initialize  Event occurs at time 38.175560, type CPU_EVENT (50), cpunum 2
+0.000000: pf_initialize  Kicking off cpu #3
+0.000000: pf_initialize  Event occurs at time 38.392432, type CPU_EVENT (50), cpunum 3
+0.000000: pf_initialize  Kicking off cpu #4
+0.000000: pf_initialize  Event occurs at time 98.267837, type CPU_EVENT (50), cpunum 4
+Initialization complete
+Running simulation...
+Simulation complete
+
+SIMULATION STATISTICS
+------------------------------
+
+Total time of run (msec): 100114.456848
+Total requests simulated: 9995
+Total events   simulated: 40014
+Warm-up time (msec)     : 0.000000
+
+Memory Usage:
+Event Blocks Allocated    : 60000
+Event Blocks in Free Queue: 4
+Memory Leak (bytes)       : 15358976
+
+PROCESS FLOW STATISTICS
+-----------------------
+
+CPU Total idle milliseconds:      0.000000
+CPU Idle time per processor:      0.000000
+CPU Percentage idle cycles:       0.000000
+CPU Total false idle ms:          0.000000
+CPU False idle time per CPU:      0.000000
+CPU Percentage false idle cycles: 0.000000
+CPU Total idle work ms:           0.000000
+CPU Context Switches: 0
+CPU Time spent context switching: 0.000000
+CPU Percentage switching cycles:  0.000000
+CPU Number of interrupts: 10011
+CPU Total time in interrupts: 0.000
+CPU Percentage interrupt cycles:  0.000000
+CPU Time-Critical request count:      0
+CPU Time-Critical Response time average: 	0.000000
+CPU Time-Critical Response time std.dev.:	0.000000
+CPU Time-Critical Response time maximum:	0
+CPU Time-Critical Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+CPU Time-Limited request count:       0
+CPU Time-Limited Response time average: 	0.000000
+CPU Time-Limited Response time std.dev.:	0.000000
+CPU Time-Limited Response time maximum:	0
+CPU Time-Limited Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+CPU Time-Noncritical request count:   0
+CPU Time-Noncritical Response time average: 	0.000000
+CPU Time-Noncritical Response time std.dev.:	0.000000
+CPU Time-Noncritical Response time maximum:	0
+CPU Time-Noncritical Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+CPU Number of IO interrupts:            0
+CPU Time spent in I/O interrupts:       0.000000
+CPU Number of clock interrupts:         10011
+CPU Time spent in clock interrupts:     0.000000
+Number of sleep events:     0
+Number of I/O sleep events: 0
+Average sleep time:         0.000000
+Average I/O sleep time:     0.000000
+
+PER-CPU STATISTICS
+
+CPU #0
+
+CPU #0 Total idle milliseconds:      0.000000
+CPU #0 Idle time per processor:      0.000000
+CPU #0 Percentage idle cycles:       0.000000
+CPU #0 Total false idle ms:          0.000000
+CPU #0 False idle time per CPU:      0.000000
+CPU #0 Percentage false idle cycles: 0.000000
+CPU #0 Total idle work ms:           0.000000
+CPU #0 Context Switches: 0
+CPU #0 Time spent context switching: 0.000000
+CPU #0 Percentage switching cycles:  0.000000
+CPU #0 Number of interrupts: 10011
+CPU #0 Total time in interrupts: 0.000
+CPU #0 Percentage interrupt cycles:  0.000000
+CPU #0 Time-Critical request count:      0
+CPU #0 Time-Critical Response time average: 	0.000000
+CPU #0 Time-Critical Response time std.dev.:	0.000000
+CPU #0 Time-Critical Response time maximum:	0
+CPU #0 Time-Critical Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+CPU #0 Time-Limited request count:       0
+CPU #0 Time-Limited Response time average: 	0.000000
+CPU #0 Time-Limited Response time std.dev.:	0.000000
+CPU #0 Time-Limited Response time maximum:	0
+CPU #0 Time-Limited Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+CPU #0 Time-Noncritical request count:   0
+CPU #0 Time-Noncritical Response time average: 	0.000000
+CPU #0 Time-Noncritical Response time std.dev.:	0.000000
+CPU #0 Time-Noncritical Response time maximum:	0
+CPU #0 Time-Noncritical Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+CPU #0 Number of IO interrupts:            0
+CPU #0 Time spent in I/O interrupts:       0.000000
+CPU #0 Number of clock interrupts:         10011
+CPU #0 Time spent in clock interrupts:     0.000000
+
+CPU #1
+
+CPU #1 Total idle milliseconds:      0.000000
+CPU #1 Idle time per processor:      0.000000
+CPU #1 Percentage idle cycles:       0.000000
+CPU #1 Total false idle ms:          0.000000
+CPU #1 False idle time per CPU:      0.000000
+CPU #1 Percentage false idle cycles: 0.000000
+CPU #1 Total idle work ms:           0.000000
+CPU #1 Context Switches: 0
+CPU #1 Time spent context switching: 0.000000
+CPU #1 Percentage switching cycles:  0.000000
+CPU #1 Number of interrupts: 0
+CPU #1 Total time in interrupts: 0.000
+CPU #1 Percentage interrupt cycles:  0.000000
+CPU #1 Time-Critical request count:      0
+CPU #1 Time-Critical Response time average: 	0.000000
+CPU #1 Time-Critical Response time std.dev.:	0.000000
+CPU #1 Time-Critical Response time maximum:	0
+CPU #1 Time-Critical Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+CPU #1 Time-Limited request count:       0
+CPU #1 Time-Limited Response time average: 	0.000000
+CPU #1 Time-Limited Response time std.dev.:	0.000000
+CPU #1 Time-Limited Response time maximum:	0
+CPU #1 Time-Limited Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+CPU #1 Time-Noncritical request count:   0
+CPU #1 Time-Noncritical Response time average: 	0.000000
+CPU #1 Time-Noncritical Response time std.dev.:	0.000000
+CPU #1 Time-Noncritical Response time maximum:	0
+CPU #1 Time-Noncritical Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+CPU #1 Number of IO interrupts:            0
+CPU #1 Time spent in I/O interrupts:       0.000000
+CPU #1 Number of clock interrupts:         0
+CPU #1 Time spent in clock interrupts:     0.000000
+
+CPU #2
+
+CPU #2 Total idle milliseconds:      0.000000
+CPU #2 Idle time per processor:      0.000000
+CPU #2 Percentage idle cycles:       0.000000
+CPU #2 Total false idle ms:          0.000000
+CPU #2 False idle time per CPU:      0.000000
+CPU #2 Percentage false idle cycles: 0.000000
+CPU #2 Total idle work ms:           0.000000
+CPU #2 Context Switches: 0
+CPU #2 Time spent context switching: 0.000000
+CPU #2 Percentage switching cycles:  0.000000
+CPU #2 Number of interrupts: 0
+CPU #2 Total time in interrupts: 0.000
+CPU #2 Percentage interrupt cycles:  0.000000
+CPU #2 Time-Critical request count:      0
+CPU #2 Time-Critical Response time average: 	0.000000
+CPU #2 Time-Critical Response time std.dev.:	0.000000
+CPU #2 Time-Critical Response time maximum:	0
+CPU #2 Time-Critical Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+CPU #2 Time-Limited request count:       0
+CPU #2 Time-Limited Response time average: 	0.000000
+CPU #2 Time-Limited Response time std.dev.:	0.000000
+CPU #2 Time-Limited Response time maximum:	0
+CPU #2 Time-Limited Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+CPU #2 Time-Noncritical request count:   0
+CPU #2 Time-Noncritical Response time average: 	0.000000
+CPU #2 Time-Noncritical Response time std.dev.:	0.000000
+CPU #2 Time-Noncritical Response time maximum:	0
+CPU #2 Time-Noncritical Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+CPU #2 Number of IO interrupts:            0
+CPU #2 Time spent in I/O interrupts:       0.000000
+CPU #2 Number of clock interrupts:         0
+CPU #2 Time spent in clock interrupts:     0.000000
+
+CPU #3
+
+CPU #3 Total idle milliseconds:      0.000000
+CPU #3 Idle time per processor:      0.000000
+CPU #3 Percentage idle cycles:       0.000000
+CPU #3 Total false idle ms:          0.000000
+CPU #3 False idle time per CPU:      0.000000
+CPU #3 Percentage false idle cycles: 0.000000
+CPU #3 Total idle work ms:           0.000000
+CPU #3 Context Switches: 0
+CPU #3 Time spent context switching: 0.000000
+CPU #3 Percentage switching cycles:  0.000000
+CPU #3 Number of interrupts: 0
+CPU #3 Total time in interrupts: 0.000
+CPU #3 Percentage interrupt cycles:  0.000000
+CPU #3 Time-Critical request count:      0
+CPU #3 Time-Critical Response time average: 	0.000000
+CPU #3 Time-Critical Response time std.dev.:	0.000000
+CPU #3 Time-Critical Response time maximum:	0
+CPU #3 Time-Critical Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+CPU #3 Time-Limited request count:       0
+CPU #3 Time-Limited Response time average: 	0.000000
+CPU #3 Time-Limited Response time std.dev.:	0.000000
+CPU #3 Time-Limited Response time maximum:	0
+CPU #3 Time-Limited Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+CPU #3 Time-Noncritical request count:   0
+CPU #3 Time-Noncritical Response time average: 	0.000000
+CPU #3 Time-Noncritical Response time std.dev.:	0.000000
+CPU #3 Time-Noncritical Response time maximum:	0
+CPU #3 Time-Noncritical Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+CPU #3 Number of IO interrupts:            0
+CPU #3 Time spent in I/O interrupts:       0.000000
+CPU #3 Number of clock interrupts:         0
+CPU #3 Time spent in clock interrupts:     0.000000
+
+CPU #4
+
+CPU #4 Total idle milliseconds:      0.000000
+CPU #4 Idle time per processor:      0.000000
+CPU #4 Percentage idle cycles:       0.000000
+CPU #4 Total false idle ms:          0.000000
+CPU #4 False idle time per CPU:      0.000000
+CPU #4 Percentage false idle cycles: 0.000000
+CPU #4 Total idle work ms:           0.000000
+CPU #4 Context Switches: 0
+CPU #4 Time spent context switching: 0.000000
+CPU #4 Percentage switching cycles:  0.000000
+CPU #4 Number of interrupts: 0
+CPU #4 Total time in interrupts: 0.000
+CPU #4 Percentage interrupt cycles:  0.000000
+CPU #4 Time-Critical request count:      0
+CPU #4 Time-Critical Response time average: 	0.000000
+CPU #4 Time-Critical Response time std.dev.:	0.000000
+CPU #4 Time-Critical Response time maximum:	0
+CPU #4 Time-Critical Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+CPU #4 Time-Limited request count:       0
+CPU #4 Time-Limited Response time average: 	0.000000
+CPU #4 Time-Limited Response time std.dev.:	0.000000
+CPU #4 Time-Limited Response time maximum:	0
+CPU #4 Time-Limited Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+CPU #4 Time-Noncritical request count:   0
+CPU #4 Time-Noncritical Response time average: 	0.000000
+CPU #4 Time-Noncritical Response time std.dev.:	0.000000
+CPU #4 Time-Noncritical Response time maximum:	0
+CPU #4 Time-Noncritical Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+CPU #4 Number of IO interrupts:            0
+CPU #4 Time spent in I/O interrupts:       0.000000
+CPU #4 Number of clock interrupts:         0
+CPU #4 Time spent in clock interrupts:     0.000000
+
+PROCESS STATISTICS
+Process Total computation time:  500572.284239
+Process Last event time:         100114.456848
+Process Number of I/O requests:  9996
+Process Number of read requests: 0
+Process Number of C-switches:    0
+Process Number of sleeps:        0
+Process Average sleep time:      0.000000
+Process Number of I/O sleeps:    0
+Process Average I/O sleep time:  0.000000
+Process False idle time:         0.000000
+Process Read Time limits measured: 0
+Process Read Time limit duration average: 	0.000000
+Process Read Time limit duration std.dev.:	0.000000
+Process Read Time limit duration maximum:	0
+Process Read Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Process Write Time limits measured: 0
+Process Write Time limit duration average: 	0.000000
+Process Write Time limit duration std.dev.:	0.000000
+Process Write Time limit duration maximum:	0
+Process Write Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Process Read Time limits missed: 0
+Process Missed Read Time limit duration average: 	0.000000
+Process Missed Read Time limit duration std.dev.:	0.000000
+Process Missed Read Time limit duration maximum:	0
+Process Missed Read Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Process Write Time limits missed: 0
+Process Missed Write Time limit duration average: 	0.000000
+Process Missed Write Time limit duration std.dev.:	0.000000
+Process Missed Write Time limit duration maximum:	0
+Process Missed Write Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+
+Process 5
+Process 5 Total computation time:  100114.456848
+Process 5 Last event time:         100101.214511
+Process 5 Number of I/O requests:  1992
+Process 5 Number of read requests: 0
+Process 5 Number of C-switches:    0
+Process 5 Number of sleeps:        0
+Process 5 Average sleep time:      0.000000
+Process 5 Number of I/O sleeps:    0
+Process 5 Average I/O sleep time:  0.000000
+Process 5 False idle time:         0.000000
+Process 5 Read Time limits measured: 0
+Process 5 Read Time limit duration average: 	0.000000
+Process 5 Read Time limit duration std.dev.:	0.000000
+Process 5 Read Time limit duration maximum:	0
+Process 5 Read Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Process 5 Write Time limits measured: 0
+Process 5 Write Time limit duration average: 	0.000000
+Process 5 Write Time limit duration std.dev.:	0.000000
+Process 5 Write Time limit duration maximum:	0
+Process 5 Write Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Process 5 Read Time limits missed: 0
+Process 5 Missed Read Time limit duration average: 	0.000000
+Process 5 Missed Read Time limit duration std.dev.:	0.000000
+Process 5 Missed Read Time limit duration maximum:	0
+Process 5 Missed Read Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Process 5 Write Time limits missed: 0
+Process 5 Missed Write Time limit duration average: 	0.000000
+Process 5 Missed Write Time limit duration std.dev.:	0.000000
+Process 5 Missed Write Time limit duration maximum:	0
+Process 5 Missed Write Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+
+Process 6
+Process 6 Total computation time:  100114.456848
+Process 6 Last event time:         100114.456848
+Process 6 Number of I/O requests:  2033
+Process 6 Number of read requests: 0
+Process 6 Number of C-switches:    0
+Process 6 Number of sleeps:        0
+Process 6 Average sleep time:      0.000000
+Process 6 Number of I/O sleeps:    0
+Process 6 Average I/O sleep time:  0.000000
+Process 6 False idle time:         0.000000
+Process 6 Read Time limits measured: 0
+Process 6 Read Time limit duration average: 	0.000000
+Process 6 Read Time limit duration std.dev.:	0.000000
+Process 6 Read Time limit duration maximum:	0
+Process 6 Read Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Process 6 Write Time limits measured: 0
+Process 6 Write Time limit duration average: 	0.000000
+Process 6 Write Time limit duration std.dev.:	0.000000
+Process 6 Write Time limit duration maximum:	0
+Process 6 Write Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Process 6 Read Time limits missed: 0
+Process 6 Missed Read Time limit duration average: 	0.000000
+Process 6 Missed Read Time limit duration std.dev.:	0.000000
+Process 6 Missed Read Time limit duration maximum:	0
+Process 6 Missed Read Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Process 6 Write Time limits missed: 0
+Process 6 Missed Write Time limit duration average: 	0.000000
+Process 6 Missed Write Time limit duration std.dev.:	0.000000
+Process 6 Missed Write Time limit duration maximum:	0
+Process 6 Missed Write Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+
+Process 7
+Process 7 Total computation time:  100114.456848
+Process 7 Last event time:         100075.129641
+Process 7 Number of I/O requests:  2081
+Process 7 Number of read requests: 0
+Process 7 Number of C-switches:    0
+Process 7 Number of sleeps:        0
+Process 7 Average sleep time:      0.000000
+Process 7 Number of I/O sleeps:    0
+Process 7 Average I/O sleep time:  0.000000
+Process 7 False idle time:         0.000000
+Process 7 Read Time limits measured: 0
+Process 7 Read Time limit duration average: 	0.000000
+Process 7 Read Time limit duration std.dev.:	0.000000
+Process 7 Read Time limit duration maximum:	0
+Process 7 Read Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Process 7 Write Time limits measured: 0
+Process 7 Write Time limit duration average: 	0.000000
+Process 7 Write Time limit duration std.dev.:	0.000000
+Process 7 Write Time limit duration maximum:	0
+Process 7 Write Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Process 7 Read Time limits missed: 0
+Process 7 Missed Read Time limit duration average: 	0.000000
+Process 7 Missed Read Time limit duration std.dev.:	0.000000
+Process 7 Missed Read Time limit duration maximum:	0
+Process 7 Missed Read Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Process 7 Write Time limits missed: 0
+Process 7 Missed Write Time limit duration average: 	0.000000
+Process 7 Missed Write Time limit duration std.dev.:	0.000000
+Process 7 Missed Write Time limit duration maximum:	0
+Process 7 Missed Write Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+
+Process 8
+Process 8 Total computation time:  100114.456848
+Process 8 Last event time:         100113.937420
+Process 8 Number of I/O requests:  1910
+Process 8 Number of read requests: 0
+Process 8 Number of C-switches:    0
+Process 8 Number of sleeps:        0
+Process 8 Average sleep time:      0.000000
+Process 8 Number of I/O sleeps:    0
+Process 8 Average I/O sleep time:  0.000000
+Process 8 False idle time:         0.000000
+Process 8 Read Time limits measured: 0
+Process 8 Read Time limit duration average: 	0.000000
+Process 8 Read Time limit duration std.dev.:	0.000000
+Process 8 Read Time limit duration maximum:	0
+Process 8 Read Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Process 8 Write Time limits measured: 0
+Process 8 Write Time limit duration average: 	0.000000
+Process 8 Write Time limit duration std.dev.:	0.000000
+Process 8 Write Time limit duration maximum:	0
+Process 8 Write Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Process 8 Read Time limits missed: 0
+Process 8 Missed Read Time limit duration average: 	0.000000
+Process 8 Missed Read Time limit duration std.dev.:	0.000000
+Process 8 Missed Read Time limit duration maximum:	0
+Process 8 Missed Read Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Process 8 Write Time limits missed: 0
+Process 8 Missed Write Time limit duration average: 	0.000000
+Process 8 Missed Write Time limit duration std.dev.:	0.000000
+Process 8 Missed Write Time limit duration maximum:	0
+Process 8 Missed Write Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+
+Process 9
+Process 9 Total computation time:  100114.456848
+Process 9 Last event time:         100101.178291
+Process 9 Number of I/O requests:  1980
+Process 9 Number of read requests: 0
+Process 9 Number of C-switches:    0
+Process 9 Number of sleeps:        0
+Process 9 Average sleep time:      0.000000
+Process 9 Number of I/O sleeps:    0
+Process 9 Average I/O sleep time:  0.000000
+Process 9 False idle time:         0.000000
+Process 9 Read Time limits measured: 0
+Process 9 Read Time limit duration average: 	0.000000
+Process 9 Read Time limit duration std.dev.:	0.000000
+Process 9 Read Time limit duration maximum:	0
+Process 9 Read Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Process 9 Write Time limits measured: 0
+Process 9 Write Time limit duration average: 	0.000000
+Process 9 Write Time limit duration std.dev.:	0.000000
+Process 9 Write Time limit duration maximum:	0
+Process 9 Write Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Process 9 Read Time limits missed: 0
+Process 9 Missed Read Time limit duration average: 	0.000000
+Process 9 Missed Read Time limit duration std.dev.:	0.000000
+Process 9 Missed Read Time limit duration maximum:	0
+Process 9 Missed Read Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Process 9 Write Time limits missed: 0
+Process 9 Missed Write Time limit duration average: 	0.000000
+Process 9 Missed Write Time limit duration std.dev.:	0.000000
+Process 9 Missed Write Time limit duration maximum:	0
+Process 9 Missed Write Time limit duration distribution
+   <  5    < 10    < 20    < 30    < 40    < 60    <100    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+
+
+STORAGE SUBSYSTEM STATISTICS
+----------------------------
+
+OVERALL I/O SYSTEM STATISTICS
+-----------------------------
+
+Overall I/O System Total Requests handled:	0
+Overall I/O System Requests per second:   	0.000000
+Overall I/O System Completely idle time:  	34.537445   	0.000345
+Overall I/O System Response time average: 	0.000000
+Overall I/O System Response time std.dev.:	0.000000
+Overall I/O System Response time maximum:	0
+Overall I/O System Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Overall I/O System Overlaps combined:     	0	0.000000
+Overall I/O System Read overlaps combined:	0	0.000000	0.000000
+Overall I/O System Critical Reads:      	     0  	0.000000
+Overall I/O System Critical Read Response time average: 	0.000000
+Overall I/O System Critical Read Response time std.dev.:	0.000000
+Overall I/O System Critical Read Response time maximum:	0
+Overall I/O System Critical Read Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Overall I/O System Non-Critical Reads:  	     0  	0.000000
+Overall I/O System Non-Critical Read Response time average: 	0.000000
+Overall I/O System Non-Critical Read Response time std.dev.:	0.000000
+Overall I/O System Non-Critical Read Response time maximum:	0
+Overall I/O System Non-Critical Read Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Overall I/O System Critical Writes:     	     0  	0.000000
+Overall I/O System Critical Write Response time average: 	0.000000
+Overall I/O System Critical Write Response time std.dev.:	0.000000
+Overall I/O System Critical Write Response time maximum:	0
+Overall I/O System Critical Write Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Overall I/O System Non-Critical Writes: 	     0  	0.000000
+Overall I/O System Non-Critical Write Response time average: 	0.000000
+Overall I/O System Non-Critical Write Response time std.dev.:	0.000000
+Overall I/O System Non-Critical Write Response time maximum:	0
+Overall I/O System Non-Critical Write Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Overall I/O System Number of reads:         0  	0.000000
+Overall I/O System Number of writes:     9996  	1.000000
+Overall I/O System Sequential reads:        0  	0.000000  	0.000000
+Overall I/O System Sequential writes:     428  	0.042817  	0.042817
+Overall I/O System Base SPTF/SDF Different:      0 /      0 	0.000000
+Overall I/O System Timeout SPTF/SDF Different:      0 /      0 	0.000000
+Overall I/O System Priority SPTF/SDF Different:      0 /      0 	0.000000
+Overall I/O System runlistlen:              495012234.614599
+Overall I/O System runoutstanding:          0.000000
+Overall I/O System simtime:                 100114.456848
+Overall I/O System warmuptime:              0.000000
+Overall I/O System setsize:                 1
+Overall I/O System Average # requests:      4944.463070
+Overall I/O System Maximum # requests:      9996
+Overall I/O System End # requests:          9996
+Overall I/O System Average queue length:    4944.463070
+Overall I/O System Maximum queue length:    9996
+Overall I/O System End queued requests:     9996
+Overall I/O System Queue time average: 	0.000000
+Overall I/O System Queue time std.dev.:	0.000000
+Overall I/O System Queue time maximum:	0
+Overall I/O System Queue time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+Overall I/O System Avg # read requests:     0.000000
+Overall I/O System Max # read requests:     0
+Overall I/O System Avg # write requests:    4944.463070
+Overall I/O System Max # write requests:    9996
+Overall I/O System Physical access time average: 	0.000000
+Overall I/O System Physical access time std.dev.:	0.000000
+Overall I/O System Physical access time maximum:	0
+Overall I/O System Number of batches:  0
+Overall I/O System Batch size average: 	0.000000
+Overall I/O System Batch size std.dev.:	0.000000
+Overall I/O System Batch size maximum:	0
+Overall I/O System Batch size distribution
+   =  1    =  2    =  3    <  6    < 10    < 20    < 40    < 80    <150    150+
+      0       0       0       0       0       0       0       0       0       0 
+Overall I/O System Inter-arrival time average: 	10.015452
+Overall I/O System Inter-arrival time std.dev.:	10.042988
+Overall I/O System Inter-arrival time maximum:	95.878736
+Overall I/O System Inter-arrival time distribution
+   0  	      0  	0.000000  	0.000000
+   5  	   3927  	0.392857  	0.392857
+  10  	   2396  	0.239696  	0.632553
+  15  	   1427  	0.142757  	0.775310
+  20  	    890  	0.089036  	0.864346
+  25  	    529  	0.052921  	0.917267
+  30  	    313  	0.031313  	0.948579
+  35  	    215  	0.021509  	0.970088
+  40  	    116  	0.011605  	0.981693
+  45  	     68  	0.006803  	0.988495
+  50  	     51  	0.005102  	0.993597
+  55  	     26  	0.002601  	0.996198
+  60  	     14  	0.001401  	0.997599
+  65  	      8  	0.000800  	0.998399
+  70  	      7  	0.000700  	0.999100
+  75  	      1  	0.000100  	0.999200
+  80  	      4  	0.000400  	0.999600
+  85  	      1  	0.000100  	0.999700
+  90  	      2  	0.000200  	0.999900
+  95  	      0  	0.000000  	0.999900
+ 100  	      1  	0.000100  	1.000000
+ 105  	      0  	0.000000  	1.000000
+ 110  	      0  	0.000000  	1.000000
+ 115  	      0  	0.000000  	1.000000
+ 120  	      0  	0.000000  	1.000000
+ 125  	      0  	0.000000  	1.000000
+ 130  	      0  	0.000000  	1.000000
+ 135  	      0  	0.000000  	1.000000
+ 140  	      0  	0.000000  	1.000000
+ 145  	      0  	0.000000  	1.000000
+ 150  	      0  	0.000000  	1.000000
+ 155  	      0  	0.000000  	1.000000
+ 160  	      0  	0.000000  	1.000000
+ 165  	      0  	0.000000  	1.000000
+ 170  	      0  	0.000000  	1.000000
+ 175  	      0  	0.000000  	1.000000
+ 180  	      0  	0.000000  	1.000000
+ 185  	      0  	0.000000  	1.000000
+ 190  	      0  	0.000000  	1.000000
+ 195  	      0  	0.000000  	1.000000
+Overall I/O System Read inter-arrival average: 	0.000000
+Overall I/O System Read inter-arrival std.dev.:	0.000000
+Overall I/O System Read inter-arrival maximum:	0
+Overall I/O System Read inter-arrival distribution
+   <  5    < 10    < 15    < 20    < 25    < 30    < 40    < 50    < 60     60+
+      0       0       0       0       0       0       0       0       0       0 
+Overall I/O System Write inter-arrival average: 	10.015452
+Overall I/O System Write inter-arrival std.dev.:	10.042988
+Overall I/O System Write inter-arrival maximum:	95.878736
+Overall I/O System Write inter-arrival distribution
+   <  5    < 10    < 15    < 20    < 25    < 30    < 40    < 50    < 60     60+
+   3927    2396    1427     890     529     313     331     119      40      24 
+Overall I/O System Number of idle periods:  1
+Overall I/O System Idle period length average: 	34.537445
+Overall I/O System Idle period length std.dev.:	0.000000
+Overall I/O System Idle period length maximum:	34.537445
+Overall I/O System Idle period length distribution
+   <  5    < 10    < 15    < 20    < 25    < 30    < 40    < 50    < 60     60+
+      0       0       0       0       0       0       1       0       0       0 
+Overall I/O System Request size average: 	12.697079
+Overall I/O System Request size std.dev.:	7.932934
+Overall I/O System Request size maximum:	112
+Overall I/O System Request size distribution
+   =  1    =  2    =  3    =  4    <  7    <  9    < 13    < 17    < 21     21+
+      0       0       0       0       0    6347       0    2280       0    1369 
+Overall I/O System Read request size average: 	0.000000
+Overall I/O System Read request size std.dev.:	0.000000
+Overall I/O System Read request size maximum:	0
+Overall I/O System Read request size distribution
+   =  1    =  2    =  3    =  4    <  7    <  9    < 13    < 17    < 21     21+
+      0       0       0       0       0       0       0       0       0       0 
+Overall I/O System Write request size average: 	12.697079
+Overall I/O System Write request size std.dev.:	7.932934
+Overall I/O System Write request size maximum:	112
+Overall I/O System Write request size distribution
+   =  1    =  2    =  3    =  4    <  7    <  9    < 13    < 17    < 21     21+
+      0       0       0       0       0    6347       0    2280       0    1369 
+Overall I/O System Instantaneous queue length average: 	0.000000
+Overall I/O System Instantaneous queue length std.dev.:	0.000000
+Overall I/O System Instantaneous queue length maximum:	0
+Overall I/O System Instantaneous queue length distribution
+   =  1    =  2    =  3    <  6    < 10    < 20    < 40    < 80    <150    150+
+      0       0       0       0       0       0       0       0       0       0 
+Overall I/O System Sub-optimal mapping penalty average: 	0.000000
+Overall I/O System Sub-optimal mapping penalty std.dev.:	0.000000
+Overall I/O System Sub-optimal mapping penalty maximum:	0
+Overall I/O System Sub-optimal mapping penalty distribution
+   = -1    =  0    =  1    =  2    =  3    =  4    < 10    < 20    <  4      4+
+      0       0       0       0       0       0       0       0       0       0 
+
+SYSTEM-LEVEL LOGORG STATISTICS
+------------------------------
+
+System Logical Organization #0
+System logorg #0 Number of requests:       0
+System logorg #0 Number of read requests:  0  	0.000000
+System logorg #0 Number of accesses:       9996
+System logorg #0 Number of read accesses:  0  	0.000000
+System logorg #0 Average outstanding:      4944.463070
+System logorg #0 Maximum outstanding:      9996
+System logorg #0 Avg nonzero outstanding:  4946.169397
+System logorg #0 Completely idle time:     34.537445
+System logorg #0 Response time average: 	0.000000
+System logorg #0 Response time std.dev.:	0.000000
+System logorg #0 Response time maximum:	0
+System logorg #0 Response time distribution
+   <  5    < 10    < 20    < 40    < 60    < 90    <120    <150    <200    200+
+      0       0       0       0       0       0       0       0       0       0 
+System logorg #0 Time-critical reads:  0
+System logorg #0 Time-critical writes: 0
+System logorg #0 Number of streaks:		1
+System logorg #0 Streak length average: 	9996.000000
+System logorg #0 Streak length std.dev.:	0.000000
+System logorg #0 Streak length maximum:	9996
+System logorg #0 Streak length distribution
+   =  1    =  2    =  3    =  4    =  5    =  6    =  7    =  8    =  9     10+
+      0       0       0       0       0       0       0       0       0       1 
+System logorg #0 Timestamped # outstanding distribution (interval = 0.000000)
+     0       1       2       3       4       5       6       7       8      9+
+     0       0       0       0       0       0       0       0       0       0
+System logorg #0 Timestamped avg # outstanding difference distribution
+   <.5      <1    <1.5      <2    <2.5      <3      <4      <5      <6      6+
+     0       0       0       0       0       0       0       0       0       0
+System logorg #0 Timestamped max # outstanding difference distribution
+   <.5      <1    <1.5      <2    <2.5      <3      <4      <5      <6      6+
+     0       0       0       0       0       0       0       0       0       0
+System logorg #0 Request size average: 	12.697079
+System logorg #0 Request size std.dev.:	7.932934
+System logorg #0 Request size maximum:	112
+System logorg #0 Request size distribution
+   =  1    =  2    =  3    =  4    <  7    <  9    < 13    < 17    < 21     21+
+      0       0       0       0       0    6347       0    2280       0    1369 
+System logorg #0 Read request size average: 	0.000000
+System logorg #0 Read request size std.dev.:	0.000000
+System logorg #0 Read request size maximum:	0
+System logorg #0 Read request size distribution
+   =  1    =  2    =  3    =  4    <  7    <  9    < 13    < 17    < 21     21+
+      0       0       0       0       0       0       0       0       0       0 
+System logorg #0 Write request size average: 	12.697079
+System logorg #0 Write request size std.dev.:	7.932934
+System logorg #0 Write request size maximum:	112
+System logorg #0 Write request size distribution
+   =  1    =  2    =  3    =  4    <  7    <  9    < 13    < 17    < 21     21+
+      0       0       0       0       0    6347       0    2280       0    1369 
+
+No simpledisk requests for members of this set
+
+
+IODRIVER STATISTICS
+-------------------
+
+
+DISK STATISTICS
+---------------
+
+No disk requests encountered
+
+SIMPLEDISK STATISTICS
+---------------------
+
+No simpledisk requests encountered
+
+CONTROLLER STATISTICS
+---------------------
+
+Controller #0 
+
+NCR 53C700 controller statistics not implemented
+Total controller bus wait time: 0.000000
+
+BUS STATISTICS
+--------------
+
+Bus #1
+Bus #1 Total utilization time: 	0.00   	0.00000
+Bus #1 (bus1) Bus idle period length average: 	100114.456848
+Bus #1 (bus1) Bus idle period length std.dev.:	0.000000
+Bus #1 (bus1) Bus idle period length maximum:	100114.456848
+Bus #1 (bus1) Bus idle period length distribution
+   <  5    < 10    < 15    < 20    < 25    < 30    < 40    < 50    < 60     60+
+      0       0       0       0       0       0       0       0       0       1 
+Bus #1 Number of arbitrations: 	0
+Bus #1 (bus1) Arbitration wait time average: 	0.000000
+Bus #1 (bus1) Arbitration wait time std.dev.:	0.000000
+Bus #1 (bus1) Arbitration wait time maximum:	0
+Bus #1 (bus1) Arbitration wait time distribution
+   =  0    <  1    <  2    <  5    < 10    < 15    < 25    < 40    < 60     60+
+      0       0       0       0       0       0       0       0       0       0 
+
+
+Start   Time: Fri Mar 27 14:06:25 2020
+
+End     Time: Fri Mar 27 14:06:26 2020
+
+Elapsed Time (seconds): 1.000000
+Simulation End
