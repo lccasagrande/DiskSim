@@ -66,7 +66,7 @@
 
 
 #include "libddbg.h"
-#include <bitvector.h>
+#include "libparam/bitvector.h"
 
 struct ddbg_class {
   char *name;
