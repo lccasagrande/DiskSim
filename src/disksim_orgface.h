@@ -101,6 +101,7 @@
 #ifndef DISKSIM_ORGFACE_H
 #define DISKSIM_ORGFACE_H
 
+#include "disksim_global.h"
 /* Completion response types */
 
 #define COMPLETE	-1

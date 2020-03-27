@@ -60,8 +60,9 @@
 #include "disksim_device.h"
 #include "disksim_disk.h"
 #include "disksim_simpledisk.h"
-#include "memsmodel/mems_global.h"
-#include "memsmodel/mems_disksim.h"
+//#include "memsmodel/mems_global.h"
+//#include "memsmodel/mems_disksim.h"
+//#include "ssdmodel/ssd.h"  /* SSD: */
 #include "config.h"
 
 #include "modules/modules.h"
@@ -88,10 +89,10 @@
 
 
 struct device_header *
-getdevbyname(char *name, 
-	     int *gdevnum, /* global device number */
-	     int *ldevnum, /* type-specific device number */
-	     int *type)    /* device type */
+getdevbyname(char *name,
+        int *gdevnum, /* global device number */
+        int *ldevnum, /* type-specific device number */
+        int *type)    /* device type */
 {
   int c;
   for(c = 0; c < disksim->deviceinfo->devs_len; c++) {
@@ -102,15 +103,20 @@ getdevbyname(char *name,
       if(ldevnum) *ldevnum = devicenos[c];
       if(type)    *type = devicetypes[c];
       switch(devicetypes[c]) {
-      case DEVICETYPE_DISK:
-	return (struct device_header *)getdisk(devicenos[c]);
-	break;
-      case DEVICETYPE_SIMPLEDISK:
-	return (struct device_header *)getsimpledisk(devicenos[c]);
-	break;
-      case DEVICETYPE_MEMS:
-	return (struct device_header *)getmems(devicenos[c]);
-	break;
+        case DEVICETYPE_DISK:
+          return (struct device_header *)getdisk(devicenos[c]);
+          break;
+        case DEVICETYPE_SIMPLEDISK:
+          return (struct device_header *)getsimpledisk(devicenos[c]);
+          break;
+//        case DEVICETYPE_MEMS:
+//          return (struct device_header *)getmems(devicenos[c]);
+//          break;
+/*
+        case DEVICETYPE_SSD:  SSD:
+          return (struct device_header *)getssd( (int)(devicenos[c]) );
+          break;
+*/
       }
     }
   }
@@ -120,8 +126,7 @@ getdevbyname(char *name,
 void device_initialize_deviceinfo (void)
 {
    if (disksim->deviceinfo == NULL) {
-      disksim->deviceinfo = malloc (sizeof(device_info_t));
-      bzero ((char *)disksim->deviceinfo, sizeof(device_info_t));
+    disksim->deviceinfo = (struct device_info *)calloc (1, sizeof(device_info_t));
    }
 }
 
@@ -140,18 +145,18 @@ void device_add(struct device_header *d, int ldevno) {
   newlen = numdevices ? (2 * numdevices) : 2;
   zerocnt = (newlen == 2) ? 2 : (newlen/2);
   disksim->deviceinfo->devicenames = 
-    realloc(disksim->deviceinfo->devicenames, newlen * sizeof(char *));
-  bzero(disksim->deviceinfo->devicenames + c, zerocnt * sizeof(char *));
+    (char **)realloc(disksim->deviceinfo->devicenames, newlen * sizeof(char *));
+  bzero(&(disksim->deviceinfo->devicenames[c]), zerocnt * sizeof(char *));
 
-  devicenos = realloc(devicenos, newlen*sizeof(int));
-  bzero(devicenos + c, zerocnt * sizeof(int));
+  devicenos = (int *)realloc(devicenos, newlen*sizeof(int));
+  bzero(&(devicenos[c]), zerocnt * sizeof(int));
 
-  devicetypes = realloc(devicetypes, newlen*sizeof(int));
-  bzero(devicetypes + c, zerocnt * sizeof(int));
+  devicetypes = (int *)realloc(devicetypes, newlen*sizeof(int));
+  bzero(&(devicetypes[c]), zerocnt * sizeof(int));
 
-  disksim->deviceinfo->devices = realloc(disksim->deviceinfo->devices, 
-					 newlen*sizeof(int));
-  bzero(disksim->deviceinfo->devices + c, zerocnt * sizeof(int));
+  disksim->deviceinfo->devices = (struct device_header **)realloc(disksim->deviceinfo->devices,
+					 newlen*sizeof(void*));
+  bzero(&(disksim->deviceinfo->devices[c]), zerocnt * sizeof(void*));
 
   disksim->deviceinfo->devs_len = newlen;
 
@@ -203,7 +208,8 @@ void device_initialize (void)
    /* call for each type of device */
   disk_initialize ();
   simpledisk_initialize ();
-  mems_initialize ();
+//  mems_initialize ();
+//  ssd_initialize ();
 }
 
 void device_resetstats (void)
@@ -211,7 +217,8 @@ void device_resetstats (void)
    /* call for each type of device */
    disk_resetstats ();
    simpledisk_resetstats ();
-   mems_resetstats ();
+//   mems_resetstats ();
+//   ssd_resetstats ();
 }
 
 
@@ -220,7 +227,8 @@ void device_printstats (void)
    /* call for each type of device */
    disk_printstats ();
    simpledisk_printstats ();
-   mems_printstats ();
+//   mems_printstats ();
+//   ssd_printstats ();
 }
 
 
@@ -248,12 +256,16 @@ void device_printsetstats (int *set, int setsize, char *sourcestr)
    case DEVICETYPE_SIMPLEDISK:
       simpledisk_printsetstats (set, setsize, sourcestr);
       break;
-   case DEVICETYPE_MEMS:
-      mems_printsetstats (set, setsize, sourcestr);
+//   case DEVICETYPE_MEMS:
+//      mems_printsetstats (set, setsize, sourcestr);
+//      break;
+//   case DEVICETYPE_SSD:
+//      ssd_printsetstats (set, setsize, sourcestr);
       break;
    default:
       fprintf(stderr, "Unknown value for device type: devicetype %d\n", devicetype);
       assert(0);
+      break;
    }
 }
 
@@ -263,7 +275,7 @@ void device_cleanstats (void)
    /* call for each type of device */
    disk_cleanstats ();
    simpledisk_cleanstats ();
-   mems_cleanstats ();
+//   mems_cleanstats ();
 }
 
 

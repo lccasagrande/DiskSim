@@ -97,6 +97,7 @@
  * and any associated documentation will at all times remain with copyright
  * holders.
  */
+#include "disksim_global.h"
 
 #ifndef HPTRACE_H
 #define HPTRACE_H

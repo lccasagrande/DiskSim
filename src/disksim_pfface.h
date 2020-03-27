@@ -100,7 +100,7 @@
 
 #ifndef DISKSIM_PFFACE_H
 #define DISKSIM_PFFACE_H
-
+#include "disksim_global.h"
 /* Internal structure types */
 
 #define SYNTHIO_OVERRIDE	1
