@@ -150,7 +150,6 @@ void marshal_fn(void *fn, int typ, struct marshaled_fn *result) {
       return;
     }
   }
-
   ddbg_assert(0);
 }
 

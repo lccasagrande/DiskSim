@@ -22,6 +22,7 @@ set(FN_PREFIX "dm")
 # Dependencies #
 ################
 include_directories(${LIBS_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 ################
 # Make Modules #
@@ -30,10 +31,10 @@ file(GLOB MODULES "${MODULES_SOURCE_DIR}/*.modspec")
 
 set(ALL_MODULES_OUTPUTS "")
 foreach(mod ${MODULES})
-    # Get output name
+# Get output name
     string(REGEX REPLACE "[.]modspec" "_param" mod_output ${mod})
     string(REGEX REPLACE ".+/modules/" ${MODULES_SOURCE_DIR}/${FN_PREFIX}_ mod_output ${mod_output})
-
+    
     # Run command
     add_custom_command(
         COMMAND ${CMD_CONV_MOD} ${FN_PREFIX} ${mod}
@@ -56,7 +57,7 @@ add_custom_command(
 ##################
 ### SOURCES      #
 ##################
-file(GLOB SOURCES "*.c")
+file(GLOB SOURCES "*.c" "*.h")
 
 add_library(libdiskmodel ${SOURCES} ${MODULES_H} ${ALL_MODULES_OUTPUTS})
 

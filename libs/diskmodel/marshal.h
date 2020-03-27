@@ -70,7 +70,6 @@ void marshal_fn(void *fn, int typ, struct marshaled_fn *result);
 void *unmarshal_fn(int *buff, int typ);
 void marshal_fns(void **fns, int fns_len, char *b, int typ);
 void unmarshal_fns(void **fns, int fns_len, char *b, int typ);
-
 typedef enum {
   DM_DISK_TYP,
   DM_LAYOUT_G1_TYP,
